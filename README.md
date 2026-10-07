@@ -1,57 +1,71 @@
-# sky130_bmlabs_reram
+<table>
+  <tr>
+    <td align="center"><img src="bm-lab-logo-white.jpg" alt="BM LABS Logo" width="200"/></td>
+    <td align="center"><img src="chip_foundry_logo.png" alt="ChipFoundry Logo" width="200"/></td>
+  </tr>
+</table>
 
-Open-PDK-style distribution of BM Labs ReRAM intellectual property for the
-SkyWater SKY130 process.
+# Neuromorphic X2 – Analog In-Memory Compute IP Macro
 
-The repository is intentionally independent of any particular chip project.
-Projects consume a pinned revision of this repository as a Git submodule, so
-IP releases and project integration changes can be reviewed and versioned
-separately.
+Neuromorphic X2 is a **512 × 512 ReRAM compute-in-memory IP macro** combining **256 Kb non-volatile storage** with analog multiply–accumulate operations. It is controlled through a **32-bit Wishbone interface** for energy-efficient edge-AI acceleration.
 
-## Available IP
+---
 
-| Cell | Description | Process | Status |
-| --- | --- | --- | --- |
-| `sky130_bmlabs_reram__nvm32x32` | 32 x 32 1T1R analog in-memory-compute macro with a Wishbone interface | SKY130 | Hard macro |
+## Key Features
 
-Additional cells, such as independently distributable compute blocks, can be
-added under the same `sky130_bmlabs_reram__*` namespace when their standalone
-physical views are available.
+- **512 × 512 ReRAM crossbar** with 256 Kb storage
+- **SET, RESET, READ, and COMPUTE** operating modes
+- FIFO-decoupled Wishbone command and response paths
+- TDC-style read and compute-result output
+- Runtime reconfiguration without a full reset
+- Simulation-ready behavioral model and testbench
 
-## Repository layout
+---
 
-- `doc/`: interface and characterization documentation
-- `gds/`: GDSII layout views
-- `lef/`: abstract physical views
-- `lib/`: timing models
-- `verilog/`: black-box and behavioral simulation models
+## Data Flow
 
-The canonical cell name is used consistently in every machine-readable view.
-
-## Integration
-
-Add the library to a project as a submodule:
-
-```sh
-git submodule add https://github.com/Baavanes/sky130_bmlabs_reram.git ip/sky130_bmlabs_reram
-git submodule update --init --recursive
+```text
+Wishbone Write
+      ↓
+Input / Command FIFO
+      ↓
+Configuration or SET / RESET / READ / COMPUTE
+      ↓
+512 × 512 ReRAM Crossbar
+      ↓
+TDC Read or MAC Result
+      ↓
+Output / Response FIFO
+      ↓
+Wishbone Read
 ```
 
-The Caravel integration example is maintained separately at
-[`Baavanes/caravel_user_Neuromorphic_X2_32x32`](https://github.com/Baavanes/caravel_user_Neuromorphic_X2_32x32).
+Compute-mode commands are written to the **input FIFO**. The crossbar operation is then executed, and the resulting MAC data is returned through the **output FIFO**.
 
-## Product summary
+---
 
-The current macro contains a 32 x 32 1T1R ReRAM crossbar for low-power matrix
-operations. It targets always-on and edge-AI workloads where data-movement
-energy and latency are important. See the files in `doc/` for the pinout,
-timing, programming flow, and measured data.
+<p align="center">
+  <img src="doc/reram_cim_process.jpg" alt="ReRAM CIM Process Flow" width="800"/>
+</p>
 
-![Process to write to the ReRAM CIM](doc/Process_to_write_to_ReRAM_CIM.png)
+---
 
-The product page is available at
-[bmsemi.io](https://bmsemi.io/commercial-neuromorphic-x1.html).
+## Behavioral Model
 
-## License
+- Main model: `hdl/beh_model/Neuromorphic_X2_wb_beh.v`
+- Testbench: `hdl/beh_model/tb_Neuromorphic_X2_wb_beh.v`
+- Wishbone address: `0x3000_0004`
+- The first three writes after reset configure the model.
+- COMPUTE mode accepts three input packets and generates 32 queued result words.
+- Wishbone reads complete only when response data is available.
 
-Licensed under the Apache License 2.0. See [LICENSE](LICENSE).
+### Command Modes
+
+| Mode | Value | Operation |
+|---|---:|---|
+| RESET | `00` | Program reset state |
+| READ | `01` | Read TDC result |
+| COMPUTE | `10` | Perform MAC operation |
+| SET | `11` | Program set state |
+
+---
