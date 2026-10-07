@@ -7,7 +7,7 @@
 
 # Neuromorphic X2 – Analog In-Memory Compute IP Macro
 
-Neuromorphic X2 is a **32 × 32 ReRAM compute-in-memory IP macro** combining **256 Kb non-volatile storage** with analog multiply–accumulate operations. It is controlled through a **32-bit Wishbone interface** for energy-efficient edge-AI acceleration.
+Neuromorphic X2 is a **32 × 32 ReRAM compute-in-memory IP macro** combining **1 Kb non-volatile storage** with analog multiply–accumulate operations. It is controlled through a **32-bit Wishbone interface** for energy-efficient edge-AI acceleration.
 
 ---
 
