@@ -1,3 +1,12 @@
+> [!IMPORTANT]
+> This repository is superseded by
+> [BMsemi/sky130_bmlabs_reram](https://github.com/BMsemi/sky130_bmlabs_reram).
+> The new repository follows the open-PDK library/cell naming convention,
+> identifies X2 correctly as `sky130_bmlabs_reram__cim32x32`, and is intended
+> to be consumed by chip projects as a pinned Git submodule. New IP updates
+> should be made there. This repository remains available only for historical
+> links and comparison.
+
 <table>
   <tr>
     <td align="center"><img src="bm-lab-logo-white.jpg" alt="BM LABS Logo" width="200"/></td>
